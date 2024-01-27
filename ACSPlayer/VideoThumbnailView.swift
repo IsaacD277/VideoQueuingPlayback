@@ -5,40 +5,68 @@
 //  Created by Isaac D2 on 1/22/24.
 //
 
+import AVKit
 import SwiftUI
 
 struct VideoThumbnailView: View {
-    var isSelected: Bool
-    var previewImage: Image?
+    @Binding var selectedVideoURL: URL?
+    
+    @State private var previewImage: Image?
     var videoURL: URL
+    
+    init(_ videoURL: URL, selectedVideoURL: Binding<URL?>) {
+        self.videoURL = videoURL
+        self._selectedVideoURL = selectedVideoURL
+    }
     
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                if let image = previewImage {
-                    image
+                if let previewImage = previewImage {
+                    previewImage
                         .resizable()
                         .frame(width: geometry.size.width, height: geometry.size.width / 16 * 9)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+                                .strokeBorder(selectedVideoURL == videoURL ? Color.blue : Color.clear, lineWidth: 2)
                         )
+                        .onTapGesture {
+                            selectedVideoURL = videoURL
+                        }
                 } else {
                     Text("No preview available")
+                        .frame(width: geometry.size.width, height: geometry.size.width / 16 * 9)
+                        .background(Color.gray)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
+                
                 Text(videoURL.lastPathComponent)
                     .font(.caption)
             }
+            .onAppear {
+                DispatchQueue.global(qos: .userInitiated).async {
+                    generatePreviewImage()
+                }
+            }
         }
     }
-    
-    init(isSelected: Bool = false, previewImage: Image? = nil, videoURL: URL) {
-        self.isSelected = isSelected
-        self.previewImage = previewImage
-        self.videoURL = videoURL
+
+    private func generatePreviewImage() {
+        let asset = AVAsset(url: videoURL)
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.appliesPreferredTrackTransform = true
+        
+        do {
+            let cgImage = try generator.copyCGImage(at: .zero, actualTime: nil)
+            let nsImage = NSImage(cgImage: cgImage, size: .zero)
+            self.previewImage = Image(nsImage: nsImage)
+        } catch {
+            print("Error generating preview image: \(error)")
+        }
     }
 }
 
 #Preview {
-    VideoThumbnailView(videoURL: URL(string: "file:///Users/isaacd2/Movies/Reel/ TGU%20Jib%20Shot%203.mov")!)
+    VideoThumbnailView(URL(string: "file:///Users/isaacd2/Movies/Reel/TGU Jib Shot 3.mov")!, selectedVideoURL: .constant(nil))
 }
