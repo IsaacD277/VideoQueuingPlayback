@@ -17,7 +17,7 @@ struct VideoPlayerView: View {
     init(_ videoURL: URL) {
         self.videoURL = videoURL
         self.player = AVQueuePlayer()
-        self.looper = AVPlayerLooper(player: player, templateItem: AVPlayerItem(asset: AVAsset(url: videoURL)))
+        self.looper = AVPlayerLooper(player: player, templateItem: AVPlayerItem(url: videoURL))
     }
     
     var body: some View {

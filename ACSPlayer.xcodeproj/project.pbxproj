@@ -14,6 +14,7 @@
 		6B26C1922B6480E90045702C /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B26C1912B6480E90045702C /* TestView.swift */; };
 		6B26C1942B6488A30045702C /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B26C1932B6488A30045702C /* VideoPlayerView.swift */; };
 		6B2DED672B5EF55A0030F206 /* VideoThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2DED662B5EF55A0030F206 /* VideoThumbnailView.swift */; };
+		6B5DA7302B64D766009DA43B /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5DA72F2B64D766009DA43B /* Queue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		6B26C1912B6480E90045702C /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		6B26C1932B6488A30045702C /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		6B2DED662B5EF55A0030F206 /* VideoThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoThumbnailView.swift; sourceTree = "<group>"; };
+		6B5DA72F2B64D766009DA43B /* Queue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				6B0661B62B5B9BE0009AF300 /* ACSPlayerApp.swift */,
 				6B0661B82B5B9BE0009AF300 /* ContentView.swift */,
 				6B26C1932B6488A30045702C /* VideoPlayerView.swift */,
+				6B5DA72F2B64D766009DA43B /* Queue.swift */,
 				6B2DED662B5EF55A0030F206 /* VideoThumbnailView.swift */,
 				6B26C1912B6480E90045702C /* TestView.swift */,
 				6B0661BA2B5B9BE1009AF300 /* Assets.xcassets */,
@@ -149,6 +152,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6B0661B92B5B9BE0009AF300 /* ContentView.swift in Sources */,
+				6B5DA7302B64D766009DA43B /* Queue.swift in Sources */,
 				6B26C1922B6480E90045702C /* TestView.swift in Sources */,
 				6B2DED672B5EF55A0030F206 /* VideoThumbnailView.swift in Sources */,
 				6B0661B72B5B9BE0009AF300 /* ACSPlayerApp.swift in Sources */,

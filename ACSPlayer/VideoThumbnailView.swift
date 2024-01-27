@@ -20,34 +20,32 @@ struct VideoThumbnailView: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack {
-                if let previewImage = previewImage {
-                    previewImage
-                        .resizable()
-                        .frame(width: geometry.size.width, height: geometry.size.width / 16 * 9)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(selectedVideoURL == videoURL ? Color.blue : Color.clear, lineWidth: 2)
-                        )
-                        .onTapGesture {
-                            selectedVideoURL = videoURL
-                        }
-                } else {
-                    Text("No preview available")
-                        .frame(width: geometry.size.width, height: geometry.size.width / 16 * 9)
-                        .background(Color.gray)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-                
-                Text(videoURL.lastPathComponent)
-                    .font(.caption)
+        VStack {
+            if let previewImage = previewImage {
+                previewImage
+                    .resizable()
+                    .frame(width: 200, height: 200 / 16 * 9)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .strokeBorder(selectedVideoURL == videoURL ? Color.blue : Color.clear, lineWidth: 2)
+                    )
+                    .onTapGesture {
+                        selectedVideoURL = videoURL
+                    }
+            } else {
+                Text("No preview available")
+                    .frame(width: 200, height: 200 / 16 * 9)
+                    .background(Color.gray)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-            .onAppear {
-                DispatchQueue.global(qos: .userInitiated).async {
-                    generatePreviewImage()
-                }
+            
+            Text(videoURL.lastPathComponent)
+                .font(.caption)
+        }
+        .onAppear {
+            DispatchQueue.global(qos: .userInitiated).async {
+                generatePreviewImage()
             }
         }
     }

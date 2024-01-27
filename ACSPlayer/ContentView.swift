@@ -13,18 +13,35 @@ struct ContentView: View {
     @State private var showFileChooser = false
     @State private var allVideos: [(URL, Image?)] = []
     @State private var selectedVideoURL: URL?
+    
+    @State private var justURLs: [URL] = []
 
     var body: some View {
         VStack {
-            if let selectedVideoURL = selectedVideoURL {
-                VideoPlayerView(selectedVideoURL)
-                    .frame(width: 500, height: 500 / 16 * 9) // Adjust size as needed
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .padding()
-            } else {
-                RoundedRectangle(cornerRadius: 8)
-                    .frame(width: 500, height: 500 / 16 * 9) // Adjust this size as well to match.
-                    .padding(.top)
+            VStack {
+                HStack {
+                    if let selectedVideoURL = selectedVideoURL {
+                        VideoPlayerView(selectedVideoURL)
+                            .frame(width: 500, height: 500 / 16 * 9) // Adjust size as needed
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .padding()
+                    } else {
+                        RoundedRectangle(cornerRadius: 8)
+                            .frame(width: 500, height: 500 / 16 * 9) // Adjust this size as well to match.
+                            .padding(.top)
+                    }
+                    
+                    Queue(videoURLs: justURLs)
+                        .frame(width: 500, height: 500 / 16 * 9) // Adjust size as needed
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .padding()
+                }
+                
+                // Video selection buttons
+                ForEach(justURLs, id: \.self) { index in
+                    Text(index.lastPathComponent)
+                }
+                .padding()
             }
             
             Button("\(filename ?? "Select Folder")") {
@@ -34,15 +51,19 @@ struct ContentView: View {
             
             if !allVideos.isEmpty {
                 ScrollView {
-                    let (columns, spacing) = gridLayout()
-                    
-                    LazyVGrid(columns: columns, spacing: spacing) {
+                    LazyVGrid(columns: gridLayout()) {
                         ForEach(allVideos, id: \.0) { (videoURL, previewImage) in
-                            VideoThumbnailView(videoURL, selectedVideoURL: $selectedVideoURL)
+                            VStack {
+                                VideoThumbnailView(videoURL, selectedVideoURL: $selectedVideoURL)
+                                #warning("User selectable thumbnail sizing and scaling")
+                                Button("Add to Queue") {
+                                    addToQueue(videoURL)
+                                }
+                            }
                         }
                     }
-                    .padding()
                 }
+                .padding()
                 
                 if let selectedVideoURL = selectedVideoURL {
                     Text("Selected Video: \(selectedVideoURL.lastPathComponent)")
@@ -79,13 +100,17 @@ struct ContentView: View {
         }
     }
     
-    private func gridLayout() -> ([GridItem], CGFloat) {
+    private func addToQueue(_ url: URL) {
+        justURLs.append(url)
+        print("Added video to queue: \(url)")
+    }
+    
+    private func gridLayout() -> [GridItem] {
         let columns = [
-            GridItem(.adaptive(minimum: 200), spacing: 16)
+            GridItem(.adaptive(minimum: 200), spacing: 8)
         ]
-        let spacing = CGFloat(200)
         
-        return (columns, spacing)
+        return columns
     }
 }
 
