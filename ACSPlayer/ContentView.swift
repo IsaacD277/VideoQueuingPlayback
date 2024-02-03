@@ -9,39 +9,27 @@ import SwiftUI
 import AVKit
 
 struct ContentView: View {
+    @ObservedObject var playerManager: PlayerManager
     @State private var filename: String?
     @State private var showFileChooser = false
     @State private var allVideos: [(URL, Image?)] = []
     @State private var selectedVideoURL: URL?
-    
     @State private var justURLs: [URL] = []
 
     var body: some View {
         VStack {
-            VStack {
-                HStack {
-                    if let selectedVideoURL = selectedVideoURL {
-                        VideoPlayerView(selectedVideoURL)
-                            .frame(width: 500, height: 500 / 16 * 9) // Adjust size as needed
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .padding()
-                    } else {
-                        RoundedRectangle(cornerRadius: 8)
-                            .frame(width: 500, height: 500 / 16 * 9) // Adjust this size as well to match.
-                            .padding(.top)
-                    }
-                    
-                    Queue(videoURLs: justURLs)
-                        .frame(width: 500, height: 500 / 16 * 9) // Adjust size as needed
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+            HStack {
+                if let selectedVideoURL = selectedVideoURL {
+                    VideoPlayerView(selectedVideoURL)
+                } else {
+                    RoundedRectangle(cornerRadius: 8)
+                        .frame(width: 500, height: 500 / 16 * 9) // Match the size to player
                         .padding()
                 }
                 
-                // Video selection buttons
-                ForEach(justURLs, id: \.self) { index in
-                    Text(index.lastPathComponent)
-                }
-                .padding()
+                VideoPlayer(player: playerManager.player)
+                    .frame(width: 500, height: 500 / 16 * 9)
+                    .padding()
             }
             
             Button("\(filename ?? "Select Folder")") {
@@ -49,16 +37,25 @@ struct ContentView: View {
             }
             .padding()
             
+            Button("Print Items") {
+                if !playerManager.player.items().isEmpty {
+                    for item in playerManager.player.items() {
+                        if let urlAsset = (item.asset as? AVURLAsset)?.url {
+                            let itemURL = urlAsset.lastPathComponent
+                            print("Player Item URL: \(itemURL)")
+                        }
+                    }
+                } else {
+                    print("nothin' in here fam.")
+                }
+            }
+                
             if !allVideos.isEmpty {
                 ScrollView {
                     LazyVGrid(columns: gridLayout()) {
                         ForEach(allVideos, id: \.0) { (videoURL, previewImage) in
                             VStack {
-                                VideoThumbnailView(videoURL, selectedVideoURL: $selectedVideoURL)
-                                #warning("User selectable thumbnail sizing and scaling")
-                                Button("Add to Queue") {
-                                    addToQueue(videoURL)
-                                }
+                                VideoThumbnailView(videoURL: videoURL, selectedVideoURL: $selectedVideoURL, playerManager: playerManager)
                             }
                         }
                     }
@@ -79,7 +76,7 @@ struct ContentView: View {
         }
     }
     
-    private func selectFolder() {
+    func selectFolder() {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = true
@@ -100,11 +97,6 @@ struct ContentView: View {
         }
     }
     
-    private func addToQueue(_ url: URL) {
-        justURLs.append(url)
-        print("Added video to queue: \(url)")
-    }
-    
     private func gridLayout() -> [GridItem] {
         let columns = [
             GridItem(.adaptive(minimum: 200), spacing: 8)
@@ -116,5 +108,5 @@ struct ContentView: View {
 
 
 #Preview {
-    ContentView()
+    ContentView(playerManager: PlayerManager())
 }

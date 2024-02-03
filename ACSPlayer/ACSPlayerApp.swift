@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct ACSPlayerApp: App {
+    @StateObject var playerManager = PlayerManager()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(playerManager: playerManager)
+        }
+        Window("Viewer", id: "Viewer") {
+            QueuePlayerView(playerManager: playerManager)
         }
     }
 }

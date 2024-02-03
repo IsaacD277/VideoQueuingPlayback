@@ -9,35 +9,46 @@ import AVKit
 import SwiftUI
 
 struct VideoThumbnailView: View {
+    @ObservedObject var playerManager: PlayerManager
     @Binding var selectedVideoURL: URL?
     
     @State private var previewImage: Image?
+    
     var videoURL: URL
     
-    init(_ videoURL: URL, selectedVideoURL: Binding<URL?>) {
+    init(videoURL: URL, selectedVideoURL: Binding<URL?>, playerManager: PlayerManager) {
         self.videoURL = videoURL
         self._selectedVideoURL = selectedVideoURL
+        self.playerManager = playerManager
     }
     
     var body: some View {
         VStack {
-            if let previewImage = previewImage {
-                previewImage
-                    .resizable()
-                    .frame(width: 200, height: 200 / 16 * 9)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .strokeBorder(selectedVideoURL == videoURL ? Color.blue : Color.clear, lineWidth: 2)
-                    )
+            ZStack(alignment: .bottomTrailing) {
+                if let previewImage = previewImage {
+                    previewImage
+                        .resizable()
+                        .frame(width: 200, height: 200 / 16 * 9)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .strokeBorder(selectedVideoURL == videoURL ? Color.blue : Color.clear, lineWidth: 2)
+                        )
+                        .onTapGesture {
+                            selectedVideoURL = videoURL
+                        }
+                } else {
+                    Text("No preview available")
+                        .frame(width: 200, height: 200 / 16 * 9)
+                        .background(Color.gray)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                
+                Image(systemName: "plus.circle")
                     .onTapGesture {
-                        selectedVideoURL = videoURL
+                        playerManager.player.insert(AVPlayerItem(url: videoURL), after: nil)
                     }
-            } else {
-                Text("No preview available")
-                    .frame(width: 200, height: 200 / 16 * 9)
-                    .background(Color.gray)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(3)
             }
             
             Text(videoURL.lastPathComponent)
@@ -66,5 +77,5 @@ struct VideoThumbnailView: View {
 }
 
 #Preview {
-    VideoThumbnailView(URL(string: "file:///Users/isaacd2/Movies/Reel/TGU Jib Shot 3.mov")!, selectedVideoURL: .constant(nil))
+    VideoThumbnailView(videoURL: URL(string: "file:///Users/isaacd2/Movies/Reel/TGU Jib Shot 3.mov")!, selectedVideoURL: .constant(nil), playerManager: PlayerManager())
 }
